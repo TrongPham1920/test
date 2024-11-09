@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 
+app.use(express.json());
+
 const mongoURI = "mongodb://localhost:27017/test";
 
 mongoose
@@ -22,7 +24,6 @@ const productSchema = new mongoose.Schema({
   description: String,
   category: String,
   stock: { type: Number, default: 0 },
-  createdDate: { type: Date, default: Date.now },
 });
 
 const Product = mongoose.model("Product", productSchema);
@@ -49,7 +50,10 @@ app.post("/products", async (req, res) => {
     const savedProduct = await newProduct.save();
     res.status(201).json(savedProduct);
   } catch (error) {
-    res.status(400).json({ error: "Lỗi khi thêm sản phẩm" });
+    console.error("Chi tiết lỗi:", error);
+    res
+      .status(400)
+      .json({ error: "Lỗi khi thêm sản phẩm", details: error.message });
   }
 });
 
